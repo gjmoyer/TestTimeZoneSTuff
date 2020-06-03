@@ -62,18 +62,19 @@ namespace ConsoleApp8_TestTimeZoneSTuff
         /// <returns></returns>
         static bool CreateNewDailyList(DateTimeOffset listTimestamp, DateTimeOffset currentTimestamp)
         {
+            var dayStartHour = 5;
             var list = new ZonedDateTime(Instant.FromDateTimeOffset(listTimestamp), eastern);
             //var current = new ZonedDateTime(Instant.FromDateTimeUtc(DateTime.UtcNow), eastern);
             var current = new ZonedDateTime(Instant.FromDateTimeOffset(currentTimestamp), eastern);
 
             // my start of day will be 5am eastern time
-            if (current.Hour < 5)
+            if (current.Hour < dayStartHour)
             {
-                current = current.Date.PlusDays(-1).AtStartOfDayInZone(eastern).Plus(Duration.FromHours(5));
+                current = current.Date.PlusDays(-1).AtStartOfDayInZone(eastern).Plus(Duration.FromHours(dayStartHour));
             }
             else
             {
-                current = current.Date.AtStartOfDayInZone(eastern).Plus(Duration.FromHours(5));
+                current = current.Date.AtStartOfDayInZone(eastern).Plus(Duration.FromHours(dayStartHour));
             }
 
             return list.LocalDateTime < current.LocalDateTime || list.LocalDateTime >= current.Plus(Duration.FromDays(1)).LocalDateTime;
