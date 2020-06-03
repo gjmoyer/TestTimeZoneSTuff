@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using NodaTime;
 
 namespace ConsoleApp8_TestTimeZoneSTuff
 {
+    using NodaTime;
+
     class Program
     {
-
         static DateTimeZone eastern;
-
 
         static void Main(string[] args)
         {
@@ -55,12 +54,19 @@ namespace ConsoleApp8_TestTimeZoneSTuff
             }
         }
 
+        /// <summary>
+        /// we must create a daily list based on the day starting at 5am eastern time
+        /// </summary>
+        /// <param name="listTimestamp">timestamp of list</param>
+        /// <param name="currentTimestamp">simulate the time of day</param>
+        /// <returns></returns>
         static bool CreateNewDailyList(DateTimeOffset listTimestamp, DateTimeOffset currentTimestamp)
         {
             var list = new ZonedDateTime(Instant.FromDateTimeOffset(listTimestamp), eastern);
             //var current = new ZonedDateTime(Instant.FromDateTimeUtc(DateTime.UtcNow), eastern);
             var current = new ZonedDateTime(Instant.FromDateTimeOffset(currentTimestamp), eastern);
 
+            // my start of day will be 5am eastern time
             if (current.Hour < 5)
             {
                 current = current.Date.PlusDays(-1).AtStartOfDayInZone(eastern).Plus(Duration.FromHours(5));
@@ -70,12 +76,7 @@ namespace ConsoleApp8_TestTimeZoneSTuff
                 current = current.Date.AtStartOfDayInZone(eastern).Plus(Duration.FromHours(5));
             }
 
-            var startOfDay = current.Date.AtMidnight().Plus(Period.FromHours(5));
-            var endOfDay = startOfDay.PlusDays(1);
-
-            Console.WriteLine("start {0} and end {1} and daylight savings = {2}", startOfDay, endOfDay, current.IsDaylightSavingTime());
-
-            return list.LocalDateTime < startOfDay || list.LocalDateTime >= endOfDay;
+            return list.LocalDateTime < current.LocalDateTime || list.LocalDateTime >= current.Plus(Duration.FromDays(1)).LocalDateTime;
         }
 
     }
